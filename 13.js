@@ -1,31 +1,6 @@
+var read0 = require('fs').readFile;
 var read = require('fs').readFile.bind(null, 'data', {encoding: 'utf8'});
 var write = require('fs').writeFileSync.bind(null, 'out');
-
-
-function parseFasta(fasta) {
-	var strings = fasta.split('\n');
-
-	var obj = {};
-	var val = '';
-	var label = '';
-
-	for (var i = 0; i < strings.length; i++) {
-		if (strings[i].charAt(0) === '>') {
-			if (val) obj[label] = val;
-			val = '';
-			label = strings[i];
-		} else {
-			val += strings[i];
-		}
-	}
-
-	if (val && label) {
-		obj[label] = val;
-	}
-
-	return obj;
-}
-
 
 var codons = function (cb) {
 	read0('rna-codon-table', {encoding: 'utf8'}, function (e, d) {
@@ -44,10 +19,16 @@ var codons = function (cb) {
 	});
 };
 
+codons(function (table) {
+	read(function (e, d) {
+		d = d.replace(/\r\n/g, '');
 
-
-read(function (e, d) {
-	d = d.replace(/\r/g, '');
-
-	write();
-}); 	
+		var acid = '';
+		for (var i = 0; i < d.length; i += 3) {
+			acid += table[d.substr(i, 3)];
+		}
+		
+		write(acid);
+	}); 	
+});
+	
