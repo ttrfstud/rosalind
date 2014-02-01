@@ -1,3 +1,4 @@
+var read0 = require('fs').readFile;
 var read = require('fs').readFile.bind(null, 'data', {encoding: 'utf8'});
 var write = require('fs').writeFileSync.bind(null, 'out');
 
@@ -44,7 +45,29 @@ var codons = function (cb) {
 	});
 };
 
+var mmt = function (cb) {
+	read0('monoisotopic-mass-table', {encoding: 'utf8'}, function (e, d) {
+		d = d.replace(/\r/g, '');
+		d = d.split('\n');
 
+		var table = [];
+
+		for (var i = 0; i < d.length; i++) {
+			var c = d[i].split(/\s+/g)[0];
+			var a = d[i].split(/\s+/g)[1];
+			table[c] = parseFloat(a);
+		}
+
+		cb(table);
+	});
+};
+
+
+function complement(p) {
+	return p.replace(/A/g, '1').replace(/C/g, '2').replace(/G/g, '3').
+	replace(/T/g, '4').replace(/1/g, 'T').replace(/2/g, 'G').replace(/3/g, 'C').
+	replace(/4/g, 'A').split('');
+}
 
 read(function (e, d) {
 	d = d.replace(/\r/g, '');
