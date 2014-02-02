@@ -14,7 +14,7 @@ function b (n, k, p) {
 	var prob = 0;
 
 
-	console.log('range is ', k);
+	console.log('range is ', k[0], k[k.length - 1]);
 	for (var i = 0; i < k.length; i++) {
 		prob += bin(n, k[i]) * 
 		Math.pow(p, k[i]) * 
@@ -24,17 +24,17 @@ function b (n, k, p) {
 	return prob;
 }
 
+var c = [];
 function bin (n, k) {
-	var c = [];
-
+	if (c[n] && c[n][k]) return c[n][k];
 	for (var i = 0; i <= n; i++) {
 		for (var j = 0; j <= Math.min (i, k); j++) {
 			if (!c[i]) c[i] = [];
 
 			if (j === 0 || j === i) {
-				c[i][j] = 1;
+				if (!c[i][j]) c[i][j] = 1;
 			} else {
-				c[i][j] = c[i - 1][j - 1] + c[i - 1][j];
+				if (!c[i][j]) c[i][j] = c[i - 1][j - 1] + c[i - 1][j];
 			}
 		}
 	}
